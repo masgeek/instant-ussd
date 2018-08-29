@@ -30,13 +30,14 @@ class UssdResponseGenerator {
     }
 
     /**
-     * 
-     * @param ArrayObject $menuConfig
+     *
+     * @param array $menuConfig
      * @param bool $continueUssdHops
      * @param bool $appendNavigationText
      * @return string
+     * @throws Exception
      */
-    public function composeUssdMenu(ArrayObject $menuConfig, $continueUssdHops = true, $appendNavigationText = true) {
+    public function composeUssdMenu(array $menuConfig, $continueUssdHops = true, $appendNavigationText = true) {
 
         // extract menu data
         $menuTitle = array_key_exists('title', $menuConfig) ? $menuConfig['title'] : "";
@@ -136,13 +137,14 @@ class UssdResponseGenerator {
     }
 
     /**
-     * 
-     * @param ArrayObject $menuConfig
+     *
+     * @param array $menuConfig
      * @param bool $continueUssdHops
      * @param bool $appendNavigationText
      * @return Response
+     * @throws Exception
      */
-    public function composeAndRenderUssdMenu(ArrayObject $menuConfig, $continueUssdHops = true, $appendNavigationText = true) {
+    public function composeAndRenderUssdMenu(array $menuConfig, $continueUssdHops = true, $appendNavigationText = true) {
         $ussdContent = $this->composeUssdMenu($menuConfig, $continueUssdHops, $appendNavigationText);
         return $this->renderUssdMenu($ussdContent);
     }
@@ -208,8 +210,7 @@ class UssdResponseGenerator {
      * @return string
      */
     public function inDevelopmentText() {
-        return 'This section is currently in development. Check back '
-                . 'later.';
+        return 'This section is currently in development. Check back later.';
     }
 
     /**
