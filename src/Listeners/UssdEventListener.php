@@ -12,63 +12,65 @@ use ArrayObject;
 
 /**
  * Description of UssdEventListener
- * 
+ *
  * Extend this class and override some of it's methods to quickly build custom ussd
  * event listeners.
  *
  * @todo Rename to ScreenListener
  * @author David Bwire
  */
-abstract class UssdEventListener {
+abstract class UssdEventListener
+{
 
     /**
      *
-     * @var ArrayObject 
+     * @var ArrayObject
      */
     protected $menuConfig;
 
     /**
      *
-     * @var ArrayObject 
+     * @var ArrayObject
      */
     protected $ussdMenusConfig;
 
     /**
      *
-     * @var string 
+     * @var string
      */
     protected $latestResponse;
 
     /**
      *
-     * @var string 
+     * @var string
      */
     protected $lastServedMenu;
 
     /**
      *
-     * @var UssdEvent 
+     * @var UssdEvent
      */
     protected $ussdEvent;
 
     /**
      *
-     * @var UssdResponseGenerator 
+     * @var UssdResponseGenerator
      */
     protected $ussdResponseGenerator;
 
     /**
      *
-     * @var UssdMenuItem 
+     * @var UssdMenuItem
      */
     protected $alternativeScreen;
 
     /**
-     * 
+     *
      * @param UssdEvent $e
      * @param ArrayObject $ussdMenusConfig
      */
-    public function __construct(UssdEvent $e, ArrayObject $ussdMenusConfig) {
+    public function __construct(UssdEvent $e, ArrayObject $ussdMenusConfig)
+    {
         $this->ussdEvent = $e;
         $this->ussdMenusConfig = $ussdMenusConfig;
         $this->menuConfig = $ussdMenusConfig[$e->getName()];
@@ -78,12 +80,13 @@ abstract class UssdEventListener {
     }
 
     /**
-     * 
+     *
      * @param boolean $continueUssdHops
      * @param boolean $appendNavigationText
      * @return UssdMenuItem|Response
      */
-    public function onTrigger($continueUssdHops = true, $appendNavigationText = true) {
+    public function onTrigger($continueUssdHops = true, $appendNavigationText = true)
+    {
         $e = $this->ussdEvent;
         // Override isSkippableScreen method, if we're dealing with a skippable menu
         if ($this->isSkippableScreen()) {
@@ -124,24 +127,26 @@ abstract class UssdEventListener {
 
     /**
      * Check if there's URL to pull menu config from
-     * 
+     *
      * @param ArrayObject $menuConfig
      * @return boolean true|false
      */
-    private function hasDynamicGetUri(ArrayObject $menuConfig) {
+    private function hasDynamicGetUri(ArrayObject $menuConfig)
+    {
         return (array_key_exists('request_config', $menuConfig) &&
-                !empty($menuConfig['request_config']['uri']) &&
-                (strtoupper($menuConfig['request_config']['method']) === 'GET'));
+            !empty($menuConfig['request_config']['uri']) &&
+            (strtoupper($menuConfig['request_config']['method']) === 'GET'));
     }
 
     /**
-     * Automatically updates the current menu config via GET. Override this 
+     * Automatically updates the current menu config via GET. Override this
      * method to come up with your own custom implimentation
-     * 
+     *
      * @todo Complete Implementation. It should return a screen config object
      * @param ArrayObject $currentMenuConfig
      */
-    public function updateCurrentMenuConfig(ArrayObject $currentMenuConfig) {
+    public function updateCurrentMenuConfig(ArrayObject $currentMenuConfig)
+    {
 
         // check if we have a preset URI
         if (!$this->hasDynamicGetUri($currentMenuConfig)) {
@@ -152,12 +157,12 @@ abstract class UssdEventListener {
         // use 50s as USSD times out after 60s
         $client = new Client(['timeout' => 50]);
         $response = $client->request('GET', $requestConfig['uri']
-                , $requestConfig['request_options']);
+            , $requestConfig['request_options']);
         $response instanceof \GuzzleHttp\Psr7\Response;
         $contents = $response->getBody()->getContents();
         // @todo - confirm that the content-type is JSON
-        if (($response->getStatusCode() === 200 ) &&
-                !empty($contents)) {
+        if (($response->getStatusCode() === 200) &&
+            !empty($contents)) {
             $decodedContents = json_decode($contents, true);
             if (!array_key_exists('menu_items', $decodedContents)) {
                 $currentMenuConfig['menu_items'] = $decodedContents;
@@ -169,63 +174,70 @@ abstract class UssdEventListener {
     }
 
     /**
-     * Override this method and get the correct 
-     * 
+     * Override this method and get the correct
+     *
      * @param string $targetLoopset
      */
-    protected function initializeLoopingSession($targetLoopset) {
+    protected function initializeLoopingSession($targetLoopset)
+    {
         $e = $this->ussdEvent;
         // when you override this method; use the correct value of loops required
         $loopsRequired = $this->latestResponse;
 
         $e->getInstantUssd()->getUssdLoopMapper()
-                ->initializeLoopingSession($targetLoopset, $e->getParam('session_id'), $loopsRequired);
+            ->initializeLoopingSession($targetLoopset, $e->getParam('session_id'), $loopsRequired);
     }
 
     /**
-     * 
+     *
      * @param boolean $continueUssdHops
      * @param boolean $appendNavigationText
      * @return Response
      */
-    protected function showScreen($continueUssdHops = true, $appendNavigationText = true) {
+    protected function showScreen($continueUssdHops = true, $appendNavigationText = true)
+    {
         return $this->ussdResponseGenerator
-                        ->composeAndRenderUssdMenu($this->menuConfig, $continueUssdHops, $appendNavigationText);
+            ->composeAndRenderUssdMenu($this->menuConfig, $continueUssdHops, $appendNavigationText);
     }
 
     /**
-     * 
+     *
      * @return UssdMenuItem
      */
-    protected function nextMenu() {
+    protected function nextMenu()
+    {
         $e = $this->ussdEvent;
         // check if we should stop looping
         $stopLooping = $e->getInstantUssd()
-                ->shouldStopLooping($this->menuConfig, $e);
+            ->shouldStopLooping($this->menuConfig, $e);
         return $this->ussdResponseGenerator
-                        ->determineNextMenu($this->lastServedMenu, $this->menuConfig, $this->latestResponse, $stopLooping);
+            ->determineNextMenu($this->lastServedMenu, $this->menuConfig, $this->latestResponse, $stopLooping);
     }
 
     /**
-     * Implement this method MUST be implemented by all screens. Use it to to configure a 
+     * Implement this method MUST be implemented by all screens. Use it to to configure a
      * menu config
-     * 
+     *
      */
-    public static abstract function configure();
+    public static function configure()
+    {
+
+    }
 
     /**
      * Implement this method and add your business logic
-     * 
-     *  @return void
+     *
+     * @return void
      */
     protected abstract function captureIncomingData();
 
     /**
      * Override this method to add logic to check if a screen is skippable
-     * 
+     *
      * @return boolean
      */
-    protected function isSkippableScreen() {
+    protected function isSkippableScreen()
+    {
         //        $isSkippableMenu = $this->ussdEvent->getInstantUssd()
         //                ->getSkippableUssdMenuMapper()
         //                ->isSkippable(['col_1' => $col1Val,
@@ -235,16 +247,17 @@ abstract class UssdEventListener {
         //            return $isSkippableMenu;
         //        }
         //        return false;
-        return (bool) $this->ussdEvent->getParam('is_skippable', false);
+        return (bool)$this->ussdEvent->getParam('is_skippable', false);
     }
 
     /**
-     * You may override this method to manage optional screens/pages or 
-     * 
+     * You may override this method to manage optional screens/pages or
+     *
      * @return UssdMenuItem
      * @throws Exception
      */
-    protected function getAlternativeScreen() {
+    protected function getAlternativeScreen()
+    {
         if (!$this->alternativeScreen) {
             throw new Exception('Alternative screen not set.');
         }
@@ -252,11 +265,12 @@ abstract class UssdEventListener {
     }
 
     /**
-     * 
+     *
      * @param string $alternativeScreenName Set the screen we should show instead of the default one pointed by next_screen key
      * @param boolean $isResetToPreviousPosition
      */
-    protected function setAlternativeScreen($alternativeScreenName, $isResetToPreviousPosition = false) {
+    protected function setAlternativeScreen($alternativeScreenName, $isResetToPreviousPosition = false)
+    {
         $alternativeScreen = new UssdMenuItem($alternativeScreenName);
         // are we going back to an already displayed screen?
         $alternativeScreen->setIsResetToPreviousPosition($isResetToPreviousPosition);
