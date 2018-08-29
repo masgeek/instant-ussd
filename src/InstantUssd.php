@@ -454,11 +454,12 @@ class InstantUssd
      * called before determining next menu. Should be called at the very top of
      * your listener
      *
-     * @param ArrayObject $menuConfig
+     * @param array $menuConfig
      * @param UssdEvent $e
      * @return boolean
+     * @throws Exception
      */
-    public function shouldStopLooping(ArrayObject $menuConfig, UssdEvent $e)
+    public function shouldStopLooping(array $menuConfig, UssdEvent $e)
     {
 
         if (!array_key_exists('is_loop_end', $menuConfig) ||
