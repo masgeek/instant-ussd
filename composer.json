@@ -1,5 +1,5 @@
 {
-    "name": "bitmarshals/instant-ussd",
+    "name": "fatelord/instant-ussd",
     "description": "Library to help you rapidly develop and easily maintain your USSD applications.",
     "type": "library",
     "license": "BSD-3-Clause",
