@@ -222,15 +222,15 @@ class UssdResponseGenerator {
     }
 
     /**
-     * 
+     *
      * @param string $lastServedMenu
-     * @param ArrayObject $menuConfig
+     * @param array $menuConfig
      * @param string $latestResponse
      * @param bool $stopLooping
      * @return UssdMenuItem
      * @throws Exception
      */
-    public function determineNextMenu($lastServedMenu, ArrayObject $menuConfig, $latestResponse, $stopLooping = true) {
+    public function determineNextMenu($lastServedMenu, array $menuConfig, $latestResponse, $stopLooping = true) {
 
         $isLoopEnd = array_key_exists('is_loop_end', $menuConfig) ? $menuConfig['is_loop_end'] : false;
 
