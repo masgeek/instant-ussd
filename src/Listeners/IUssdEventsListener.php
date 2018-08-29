@@ -22,18 +22,19 @@ class IUssdEventsListener {
 
     /**
      *
-     * @var ArrayObject
+     * @var array
      */
     protected $ussdMenusConfig;
 
-    public function __construct(ArrayObject $ussdMenusConfig) {
+    public function __construct(array $ussdMenusConfig) {
         $this->ussdMenusConfig = $ussdMenusConfig;
     }
 
     /**
-     * 
+     *
      * @param UssdEvent $e
      * @return mixed boolean|null
+     * @throws Exception
      */
     public function onRetreiveLastMenuServed(UssdEvent $e) {
 
@@ -55,9 +56,10 @@ class IUssdEventsListener {
     }
 
     /**
-     * 
+     *
      * @param UssdEvent $e
      * @return mixed false|null|string
+     * @throws Exception
      */
     public function onGoBackPre(UssdEvent $e) {
 
