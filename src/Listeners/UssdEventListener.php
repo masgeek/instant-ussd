@@ -67,9 +67,9 @@ abstract class UssdEventListener
     /**
      *
      * @param UssdEvent $e
-     * @param ArrayObject $ussdMenusConfig
+     * @param array $ussdMenusConfig
      */
-    public function __construct(UssdEvent $e, ArrayObject $ussdMenusConfig)
+    public function __construct(UssdEvent $e, array $ussdMenusConfig)
     {
         $this->ussdEvent = $e;
         $this->ussdMenusConfig = $ussdMenusConfig;
@@ -128,10 +128,10 @@ abstract class UssdEventListener
     /**
      * Check if there's URL to pull menu config from
      *
-     * @param ArrayObject $menuConfig
+     * @param array $menuConfig
      * @return boolean true|false
      */
-    private function hasDynamicGetUri(ArrayObject $menuConfig)
+    private function hasDynamicGetUri(array $menuConfig)
     {
         return (array_key_exists('request_config', $menuConfig) &&
             !empty($menuConfig['request_config']['uri']) &&
@@ -143,9 +143,10 @@ abstract class UssdEventListener
      * method to come up with your own custom implimentation
      *
      * @todo Complete Implementation. It should return a screen config object
-     * @param ArrayObject $currentMenuConfig
+     * @param array $currentMenuConfig
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function updateCurrentMenuConfig(ArrayObject $currentMenuConfig)
+    public function updateCurrentMenuConfig(array $currentMenuConfig)
     {
 
         // check if we have a preset URI
