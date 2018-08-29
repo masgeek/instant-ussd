@@ -192,8 +192,7 @@ class IUssdEventsListener
             $menuTitle = "Thank you for using our service.";
         }
         $ussdResponseGenerator = new UssdResponseGenerator();
-        $ussdContent = $ussdResponseGenerator
-            ->composeUssdMenu(['title' => $menuTitle], false, false);
+        $ussdContent = $ussdResponseGenerator->composeUssdMenu(['title' => $menuTitle], false, false);
         return $ussdResponseGenerator
             ->renderUssdMenu($ussdContent);
     }
