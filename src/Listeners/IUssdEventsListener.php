@@ -12,13 +12,14 @@ use ArrayObject;
 
 /**
  * Description of IUssdEventsListener
- * 
+ *
  * Listens to events triggered by InstantUssd library
- * 
+ *
  *
  * @author David Bwire
  */
-class IUssdEventsListener {
+class IUssdEventsListener
+{
 
     /**
      *
@@ -26,7 +27,8 @@ class IUssdEventsListener {
      */
     protected $ussdMenusConfig;
 
-    public function __construct(array $ussdMenusConfig) {
+    public function __construct(array $ussdMenusConfig)
+    {
         $this->ussdMenusConfig = $ussdMenusConfig;
     }
 
@@ -36,11 +38,12 @@ class IUssdEventsListener {
      * @return mixed boolean|null
      * @throws Exception
      */
-    public function onRetreiveLastMenuServed(UssdEvent $e) {
+    public function onRetreiveLastMenuServed(UssdEvent $e)
+    {
 
         // retreive mapper
         $ussdMenusServedMapper = $e->getServiceLocator()
-                ->get(UssdMenusServedMapper::class);
+            ->get(UssdMenusServedMapper::class);
         // instance check
         if (!$ussdMenusServedMapper instanceof UssdMenusServedMapper) {
             return false;
@@ -61,11 +64,12 @@ class IUssdEventsListener {
      * @return mixed false|null|string
      * @throws Exception
      */
-    public function onGoBackPre(UssdEvent $e) {
+    public function onGoBackPre(UssdEvent $e)
+    {
 
         // retreive mapper
         $ussdMenusServedMapper = $e->getServiceLocator()
-                ->get(UssdMenusServedMapper::class);
+            ->get(UssdMenusServedMapper::class);
         // instance check
         if (!$ussdMenusServedMapper instanceof UssdMenusServedMapper) {
             return false;
@@ -84,10 +88,10 @@ class IUssdEventsListener {
             if ($currentResults['is_loop_end']) {
                 // decrement loops done so far
                 $this->getUssdLoopMapper($e)
-                        ->decrementLoops($currentResults['loopset_name'], $e->getParam('session_id'));
+                    ->decrementLoops($currentResults['loopset_name'], $e->getParam('session_id'));
             }
             // remove one item i.e latest_menu
-            $ussdMenusServedMapper->removeMenuVisitHistoryById((int) $currentResults['id']);
+            $ussdMenusServedMapper->removeMenuVisitHistoryById((int)$currentResults['id']);
             // no other item to return
             return null;
         }
@@ -95,11 +99,11 @@ class IUssdEventsListener {
             if ($currentResults['is_loop_end']) {
                 // decrement loops done so far
                 $this->getUssdLoopMapper($e)
-                        ->decrementLoops($currentResults['loopset_name'], $e->getParam('session_id'));
+                    ->decrementLoops($currentResults['loopset_name'], $e->getParam('session_id'));
             }
             // remove latest_menu & return previous_menu
             $menuVisitHistoryIdToRemove = $currentResults['id'];
-            $ussdMenusServedMapper->removeMenuVisitHistoryById((int) $menuVisitHistoryIdToRemove);
+            $ussdMenusServedMapper->removeMenuVisitHistoryById((int)$menuVisitHistoryIdToRemove);
             // move to next
             $results->next();
             // get previous menu
@@ -112,12 +116,13 @@ class IUssdEventsListener {
     }
 
     /**
-     * 
+     *
      * @param UssdEvent $e
      * @return mixed false|null
      * @throws Exception
      */
-    public function onRetreiveMenuConfig(UssdEvent $e) {
+    public function onRetreiveMenuConfig(UssdEvent $e)
+    {
 
         // extract the menu_id whose config we're looking for
         $menuId = $e->getParam('menu_id', null);
@@ -135,11 +140,12 @@ class IUssdEventsListener {
     }
 
     /**
-     * 
+     *
      * @param UssdEvent $e
      * @return mixed false|int
      */
-    public function onUssdMenuTrigger(UssdEvent $e) {
+    public function onUssdMenuTrigger(UssdEvent $e)
+    {
 
         $eventName = $e->getName();
         // incoming cycle & system events should not be tracked
@@ -153,7 +159,7 @@ class IUssdEventsListener {
         }
         // retreive mapper
         $ussdMenusServedMapper = $e->getServiceLocator()
-                ->get(UssdMenusServedMapper::class);
+            ->get(UssdMenusServedMapper::class);
 
         // instance check
         if (!$ussdMenusServedMapper instanceof UssdMenusServedMapper) {
@@ -171,11 +177,12 @@ class IUssdEventsListener {
     }
 
     /**
-     * 
+     *
      * @param UssdEvent $e
      * @return Response
      */
-    public function onExit(UssdEvent $e) {
+    public function onExit(UssdEvent $e)
+    {
 
         $exitMessage = $e->getParam('exit_message');
 
@@ -186,17 +193,19 @@ class IUssdEventsListener {
         }
         $ussdResponseGenerator = new UssdResponseGenerator();
         $ussdContent = $ussdResponseGenerator
-                ->composeUssdMenu(new ArrayObject(['title' => $menuTitle]), false, false);
+            ->composeUssdMenu(['title' => $menuTitle], false, false);
         return $ussdResponseGenerator
-                        ->renderUssdMenu($ussdContent);
+            ->renderUssdMenu($ussdContent);
     }
 
     /**
-     * 
+     *
      * @param UssdEvent $e
      * @return Response
+     * @throws Exception
      */
-    public function onError(UssdEvent $e) {
+    public function onError(UssdEvent $e)
+    {
 
         $errorMessage = $e->getParam('error_message');
         if (!empty($errorMessage)) {
@@ -207,19 +216,20 @@ class IUssdEventsListener {
 
         $ussdResponseGenerator = new UssdResponseGenerator();
         $ussdContent = $ussdResponseGenerator
-                ->composeUssdMenu(new ArrayObject(['title' => $menuTitle]), true, true);
+            ->composeUssdMenu(['title' => $menuTitle], true, true);
         return $ussdResponseGenerator
-                        ->renderUssdMenu($ussdContent);
+            ->renderUssdMenu($ussdContent);
     }
 
     /**
-     * 
+     *
      * @param UssdEvent $e
      * @return UssdLoopMapper
      */
-    private function getUssdLoopMapper(UssdEvent $e) {
+    private function getUssdLoopMapper(UssdEvent $e)
+    {
         return $e->getServiceLocator()
-                        ->get(UssdLoopMapper::class);
+            ->get(UssdLoopMapper::class);
     }
 
 }

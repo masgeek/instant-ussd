@@ -200,8 +200,7 @@ class UssdResponseGenerator {
      * @return string
      */
     public function inServiceText() {
-        return 'This application is currently being serviced. Check back '
-                . 'later.';
+        return 'This application is currently being serviced. Check back later.';
     }
 
     /**
