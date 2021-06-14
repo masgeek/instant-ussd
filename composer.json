@@ -1,5 +1,5 @@
 {
-    "name": "fatelord/instant-ussd",
+    "name": "masgeek/instant-ussd",
     "description": "Library to help you rapidly develop and easily maintain your USSD applications.",
     "type": "library",
     "license": "BSD-3-Clause",
@@ -11,7 +11,7 @@
         "bitmarshals",
         "David Bwire"
     ],
-    "homepage": "https://github.com/bitmarshals/instant-ussd",
+    "homepage": "https://github.com/masgeek/instant-ussd",
     "autoload": {
         "psr-4": {
             "Bitmarshals\\InstantUssd\\": "src/"
