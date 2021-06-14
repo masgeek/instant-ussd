@@ -106,6 +106,11 @@ class UssdResponseGenerator {
                         // skip to the next $menuItem
                         continue;
                     }
+                    if (array_key_exists('is_hidden', $menuItem) &&
+                            ($menuItem['is_hidden'] === true)) {
+                        // skip menu items that are hidden
+                        continue;
+                    }
                     // rank if we have more than one item in ArrayObject
                     $ranking = $key + 1;
                     $responseText = $responseText . ((string) $ranking) . ". " . $menuItem['description'] . $this->lineBreak();
@@ -117,20 +122,34 @@ class UssdResponseGenerator {
                 $menuItem = current($menuItems);
                 // indeterminate menus may have a single list item that just point to it's next call
                 if (array_key_exists('description', $menuItem) && !empty($menuItem['description'])) {
-                    // we have a single menu item attach and break
-                    $responseText = $responseText . ("1. ") . $menuItem['description'] . $this->lineBreak();
+                    // check is_hidden but maintain old behaviour
+                    if (array_key_exists('is_hidden', $menuItem)) {
+                        if ($menuItem['is_hidden'] === false) {
+                            // we have a single menu item attach and break
+                            $responseText = $responseText . ("1. ") . $menuItem['description'] . $this->lineBreak();
+                        }
+                    } else {
+                        // we have a single menu item attach and break
+                        $responseText = $responseText . ("1. ") . $menuItem['description'] . $this->lineBreak();
+                    }
                 } else {
                     // @todo log notice
                 }
             }
+            $responseText = $responseText . $this->lineBreak();
         }
         // see if menufooter is attached
         if ($menuFooter) {
-            $responseText = $responseText . $menuFooter . $this->lineBreak();
+            $responseText = $responseText . $menuFooter . $this->lineBreak() . $this->lineBreak();
         }
         // check if we should append navigation text
         if ($appendNavigationText === true) {
-            return $this->appendNavigationText($responseText);
+            if (array_key_exists('navigation_text', $menuConfig) &&
+                    !empty($menuConfig['navigation_text'])) {
+                return $responseText . $menuConfig['navigation_text'];
+            } else {
+                return $this->appendNavigationText($responseText);
+            }
         } else {
             return $responseText;
         }
@@ -157,11 +176,11 @@ class UssdResponseGenerator {
     protected function appendNavigationText($responseText) {
 
         return $responseText
-                . "0. Go Back"
+                . "0. GO BACK"
                 . $this->lineBreak()
-                . "00. Main Menu"
+                . "00. MAIN MENU"
                 . $this->lineBreak()
-                . "000. Exit";
+                . "000. EXIT";
     }
 
     /**

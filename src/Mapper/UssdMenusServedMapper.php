@@ -44,6 +44,80 @@ class UssdMenusServedMapper extends TableGateway {
     }
 
     /**
+     * 
+     * @param string $phoneNumber
+     * @param int $howManyMinutesAgo
+     * @return false | array false if no recent session or recent session details array
+     */
+    public function hasRecentSession($phoneNumber, $howManyMinutesAgo = 30) {
+        $sql = $this->getSlaveSql();
+        $select = $sql->select()
+                ->where($this->getPredicate()->greaterThanOrEqualTo('create_time'
+                                , time() - (60 * $howManyMinutesAgo)))
+                ->where(['phone_number' => $phoneNumber,])
+                ->order('id DESC')
+                ->limit(1);
+        $result = $sql->prepareStatementForSqlObject($select)->execute();
+        if (!$result->count()) {
+            return false;
+        }
+        return $result->current();
+    }
+
+    /**
+     * 
+     * @param string $previousSessionId
+     * @param string $currentSessionId
+     * @return boolean
+     */
+    public function swapSession($previousSessionId, $currentSessionId) {
+        $sessionExists = $this->sessionExists($previousSessionId);
+        if (!$sessionExists) {
+            return false;
+        }
+        $sql = $this->getSlaveSql();
+        $update = $sql->update()
+                ->set(['session_id' => $currentSessionId])
+                ->where(['session_id' => $previousSessionId,]);
+        $result = $sql->prepareStatementForSqlObject($update)
+                ->execute();
+        return $this->swapLoopingSession($previousSessionId, $currentSessionId) &&
+                (bool) $result->getAffectedRows();
+    }
+
+    /**
+     * 
+     * @param string $previousSessionId
+     * @param string $currentSessionId
+     * @return bool
+     */
+    private function swapLoopingSession($previousSessionId, $currentSessionId) {
+        $sql = $this->getSlaveSql('iussd_ussd_loop');
+        $update = $sql->update()
+                ->set(['session_id' => $currentSessionId])
+                ->where(['session_id' => $previousSessionId,]);
+        $result = $sql->prepareStatementForSqlObject($update)
+                ->execute();
+        return (bool) $result->getAffectedRows();
+    }
+
+    /**
+     * 
+     * @param string $previousSessionId
+     * @return bool
+     */
+    private function sessionExists($previousSessionId) {
+        $sql = $this->getSlaveSql();
+        $select = $sql->select()
+                ->columns(['session_id'])
+                ->where(['session_id' => $previousSessionId])
+                ->limit(1);
+        $result = $sql->prepareStatementForSqlObject($select)
+                ->execute();
+        return (bool) $result->count();
+    }
+
+    /**
      * Returns a list of menus previously visited in LIFO order
      * 
      * @param string $ussdSessionId
@@ -53,7 +127,7 @@ class UssdMenusServedMapper extends TableGateway {
      */
     public function listServedMenusBySessionId($ussdSessionId, $limit = 2, array $columns = ['id', 'menu_id']) {
 
-        $sql    = $this->getSlaveSql();
+        $sql = $this->getSlaveSql();
         $select = $sql->select()
                 ->columns($columns)
                 ->where(['session_id' => $ussdSessionId])
@@ -73,7 +147,7 @@ class UssdMenusServedMapper extends TableGateway {
      */
     public function clearMenuVisitHistoryBySessionId($ussdSessionId) {
 
-        $sql    = $this->getSlaveSql();
+        $sql = $this->getSlaveSql();
         $delete = $sql->delete()
                 ->where(['session_id' => $ussdSessionId])
                 // don't delete home_* pages
@@ -99,10 +173,10 @@ class UssdMenusServedMapper extends TableGateway {
      */
     public function resetMenuVisitHistoryToPreviousPosition($ussdSessionId, $menuIdToServe) {
 
-        $sql          = $this->getSlaveSql();
+        $sql = $this->getSlaveSql();
         // find the latest parent node
         // in sequence
-        $select       = $sql->select()
+        $select = $sql->select()
                 ->columns(['id'])
                 ->where(['session_id' => $ussdSessionId, 'menu_id' => $menuIdToServe])
                 ->order('id DESC')
@@ -160,7 +234,7 @@ class UssdMenusServedMapper extends TableGateway {
      * @return boolean
      */
     public function removeMenuVisitHistoryById($menuVisitHistoryId) {
-        $sql    = $this->getSlaveSql();
+        $sql = $this->getSlaveSql();
         $delete = $sql->delete()
                 ->where(['id' => $menuVisitHistoryId]);
 
