@@ -1,37 +1,37 @@
 {
-    "name": "masgeek/instant-ussd",
-    "description": "Library to help you rapidly develop and easily maintain your USSD applications.",
-    "type": "library",
-    "license": "BSD-3-Clause",
-    "keywords": [
-        "ussd",
-        "instant ussd", 
-        "ussd framework",
-        "ussd library",
-        "bitmarshals",
-        "David Bwire"
-    ],
-    "homepage": "https://github.com/masgeek/instant-ussd",
-    "autoload": {
-        "psr-4": {
-            "Bitmarshals\\InstantUssd\\": "src/"
-        }
-    },
-    "require": {
-        "php": ">=5.6.0",
-        "zendframework/zend-db": "^2.8.1",
-        "zendframework/zend-eventmanager": "^2.6.3 || ^3.0.1",
-        "zendframework/zend-servicemanager": "^2.7.6 || ^3.1.1",
-        "zendframework/zend-http": "^2.5.4",
-        "zendframework/zend-validator": "^2.9.2",
-        "guzzlehttp/guzzle": "~6.0"
-    },
-    "authors": [
-        {
-            "name": "David Bwire",
-            "email": "israelbwire@gmail.com",
-            "role": "Developer"
-        }
-    ],
-    "minimum-stability": "stable"
+  "name": "masgeek/instant-ussd",
+  "description": "Library to help you rapidly develop and easily maintain your USSD applications.",
+  "type": "library",
+  "license": "BSD-3-Clause",
+  "keywords": [
+    "ussd",
+    "instant ussd",
+    "ussd framework",
+    "ussd library",
+    "bitmarshals",
+    "David Bwire"
+  ],
+  "homepage": "https://github.com/masgeek/instant-ussd",
+  "autoload": {
+    "psr-4": {
+      "Bitmarshals\\InstantUssd\\": "src/"
+    }
+  },
+  "require": {
+    "php": ">=5.6.0",
+    "laminas/laminas-db": "^2.8.1",
+    "laminas/laminas-eventmanager": "^2.6.3 || ^3.0.1",
+    "laminas/laminas-servicemanager": "^2.7.6 || ^3.1.1",
+    "laminas/laminas-http": "^2.5.4",
+    "laminas/laminas-validator": "^2.9.2",
+    "guzzlehttp/guzzle": "~6.0"
+  },
+  "authors": [
+    {
+      "name": "David Bwire",
+      "email": "israelbwire@gmail.com",
+      "role": "Developer"
+    }
+  ],
+  "minimum-stability": "stable"
 }
